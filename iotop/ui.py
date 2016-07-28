@@ -505,7 +505,7 @@ class IOTopUI(object):
                         print_line(lines[i])
                     except UnicodeEncodeError:
                         # Python2: 'ascii' codec can't encode character ...
-                        # http://bugs.debian.org/708252
+                        # https://bugs.debian.org/708252
                         print_line(lines[i].encode('utf-8'))
                 except curses.error:
                     pass

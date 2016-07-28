@@ -21,7 +21,7 @@ import fnmatch
 import os
 import platform
 
-# From http://git.kernel.org/?p=utils/util-linux-ng/util-linux-ng.git;a=blob;
+# From https://git.kernel.org/?p=utils/util-linux-ng/util-linux-ng.git;a=blob;
 #      f=configure.ac;h=770eb45ae85d32757fc3cff1d70a7808a627f9f7;hb=HEAD#l354
 # i386 bit userspace under an x86_64 kernel will have its uname() appear as
 # 'x86_64' but it will use the i386 syscall number, that's why we consider both

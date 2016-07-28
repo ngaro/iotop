@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# http://bugs.python.org/issue644744
+# https://bugs.python.org/issue644744
 
 python setup.py install -O1 --root="$RPM_BUILD_ROOT" --record=INSTALLED_FILES
 # 'brp-compress' gzips the man pages without distutils knowing... fix this
