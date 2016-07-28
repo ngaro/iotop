@@ -17,5 +17,5 @@ cd "$TEMPDIR/$PACKAGE-$VERSION"
 mv "dist/$PACKAGE-$VERSION.tar."{gz,bz2} "$DIR/dist"
 ./setup.py bdist_rpm
 mv "dist/$PACKAGE-$VERSION-1."{noarch,src}.rpm "$DIR/dist"
-rm -fr "$TEMPDIR"
-(cd "$DIR/dist" && echo ./* | xargs -n1 gpg -ab)
+rm --force --recursive "$TEMPDIR"
+(cd "$DIR/dist" && echo ./* | xargs -n1 gpg --armor --detach-sign)
