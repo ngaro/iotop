@@ -11,7 +11,7 @@ import socket
 import struct
 
 try:
-    # try to use python 2.5's netlink support
+    # try to use Python 2.5's netlink support
     _dummysock = socket.socket(socket.AF_NETLINK, socket.SOCK_RAW, 0)
     _dummysock.bind((0, 0))
     del _dummysock
@@ -240,7 +240,7 @@ class Connection:
 
     def recv(self):
         contents, (nlpid, nlgrps) = _nl_recv(self.descriptor)
-        # XXX: python doesn't give us message flags, check
+        # XXX: Python doesn't give us message flags, check
         #      len(contents) vs. msglen for TRUNC
         msglen, msg_type, flags, seq, pid = struct.unpack("IHHII",
                                                           contents[:16])

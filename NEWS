@@ -2,7 +2,7 @@
 ~~~
 o Clean up the terminal on exit
 o Stop busy looping on exit in certain conditions
-o Restored UTF-8 support with python2
+o Restored UTF-8 support with Python 2
 o Fixed install scripts to install to sbin/ instead of bin/
 o Releases are now gpg signed with key "4096R/4D23A27E 2013-05-26"
 
@@ -38,7 +38,7 @@ o Better reporting of missing requirements
 
 0.4
 ~~~
-o Compatibility with python2.4 using the ctypes module
+o Compatibility with Python 2.4 using the ctypes module
 o Stopped using setuptools in favor of straight distutils
 
 0.3.2
