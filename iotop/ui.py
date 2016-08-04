@@ -29,6 +29,7 @@ import select
 import signal
 import sys
 import time
+from collections import OrderedDict
 
 from iotop.data import find_uids, TaskStatsNetlink, ProcessList, Stats
 from iotop.data import ThreadInfo
@@ -202,11 +203,16 @@ class IOTopUI(object):
 
     def adjust_sorting_key(self, delta):
         orig_sorting_key = self.sorting_key
-        self.sorting_key += delta
-        self.sorting_key = max(0, self.sorting_key)
-        self.sorting_key = min(len(IOTopUI.sorting_keys) - 1, self.sorting_key)
+        self.sorting_key = self.get_sorting_key(delta)
         if orig_sorting_key != self.sorting_key:
             self.sorting_reverse = IOTopUI.sorting_keys[self.sorting_key][1]
+
+    def get_sorting_key(self, delta):
+        new_sorting_key = self.sorting_key
+        new_sorting_key += delta
+        new_sorting_key = max(0, new_sorting_key)
+        new_sorting_key = min(len(IOTopUI.sorting_keys) - 1, new_sorting_key)
+        return new_sorting_key
 
     # I wonder if switching to urwid for the display would be better here
 
@@ -479,10 +485,47 @@ class IOTopUI(object):
                 status_msg = ('CONFIG_TASK_DELAY_ACCT not enabled in kernel, '
                               'cannot determine SWAPIN and IO %')
 
+            help_lines = []
+            help_attrs = []
+            if self.options.help:
+                prev = self.get_sorting_key(-1)
+                next = self.get_sorting_key(1)
+                help = OrderedDict([
+                    ('keys', ''),
+                    ('any', 'refresh'),
+                    ('q', 'quit'),
+                    ('i', 'ionice'),
+                    ('o', 'all' if self.options.only else 'active'),
+                    ('p', 'threads' if self.options.processes else 'procs'),
+                    ('a', 'bandwidth' if self.options.accumulated else 'accum'),
+                    ('sort', ''),
+                    ('r', 'asc' if self.sorting_reverse else 'desc'),
+                    ('left', titles[prev].strip()),
+                    ('right', titles[next].strip()),
+                    ('home', titles[0].strip()),
+                    ('end', titles[-1].strip()),
+                ])
+                help_line = -1
+                for key, help in help.items():
+                    if help:
+                        help_item = ['  ', key, ': ', help]
+                        help_attr = [0, 0 if key == 'any' else curses.A_UNDERLINE, 0, 0]
+                    else:
+                        help_item = ['  ', key, ':']
+                        help_attr = [0, 0, 0]
+                    if not help_lines or not help or len(''.join(help_lines[help_line]) + ''.join(help_item)) > self.width:
+                        help_lines.append(help_item)
+                        help_attrs.append(help_attr)
+                        help_line += 1
+                    else:
+                        help_lines[help_line] += help_item
+                        help_attrs[help_line] += help_attr
+
             len_summary = len(summary)
             len_titles = int(bool(titles))
             len_status_msg = int(bool(status_msg))
-            max_lines = self.height - len_summary - len_titles - len_status_msg
+            len_help = len(help_lines)
+            max_lines = self.height - len_summary - len_titles - len_status_msg - len_help
             if max_lines < 5:
                 titles = []
                 len_titles = 0
@@ -492,7 +535,11 @@ class IOTopUI(object):
             if max_lines < 7:
                 status_msg = None
                 len_status_msg = 0
-            max_lines = self.height - len_summary - len_titles - len_status_msg
+            if max_lines < 8:
+                help_lines = []
+                help_attrs = []
+                len_help = 0
+            max_lines = self.height - len_summary - len_titles - len_status_msg - len_help
             num_lines = min(len(lines), max_lines)
 
             for i, s in enumerate(summary):
@@ -526,6 +573,13 @@ class IOTopUI(object):
                         print_line(lines[i].encode('utf-8'))
                 except curses.error:
                     pass
+            for ln in range(len_help):
+                line = self.height - len_status_msg - len_help + ln
+                self.win.hline(line, 0, ord(' ') | curses.A_REVERSE, self.width)
+                pos = 0
+                for i in range(len(help_lines[ln])):
+                    self.win.insstr(line, pos, help_lines[ln][i], curses.A_REVERSE | help_attrs[ln][i])
+                    pos += len(help_lines[ln][i])
             if status_msg:
                 self.win.insstr(self.height - 1, 0, status_msg,
                                 curses.A_BOLD)
@@ -648,6 +702,8 @@ def main():
                       help='suppress some lines of header (implies --batch)')
     parser.add_option('--profile', action='store_true', dest='profile',
                       default=False, help=optparse.SUPPRESS_HELP)
+    parser.add_option('--no-help', action='store_false', dest='help', default=True,
+                      help='suppress listing of shortcuts')
 
     options, args = parser.parse_args()
     if args:
