@@ -511,7 +511,8 @@ class IOTopUI(object):
                     title += self.sorting_reverse and '>' or '<'
                 title = title[:remaining_cols]
                 remaining_cols -= len(title)
-                self.win.addstr(len_summary, pos, title, attr)
+                if title:
+                    self.win.addstr(len_summary, pos, title, attr)
                 pos += len(title)
             for i in range(num_lines):
                 try:
