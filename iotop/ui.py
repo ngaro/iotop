@@ -478,6 +478,7 @@ class IOTopUI(object):
                 self.win.addstr(i, 0, s[:self.width])
             self.win.hline(len(summary), 0, ord(' ') | curses.A_REVERSE,
                            self.width)
+            pos = 0
             remaining_cols = self.width
             for i in range(len(titles)):
                 attr = curses.A_REVERSE
@@ -489,7 +490,8 @@ class IOTopUI(object):
                     title += self.sorting_reverse and '>' or '<'
                 title = title[:remaining_cols]
                 remaining_cols -= len(title)
-                self.win.addstr(title, attr)
+                self.win.addstr(len(summary), pos, title, attr)
+                pos += len(title)
             if Stats.has_blkio_delay_total:
                 status_msg = None
             else:
