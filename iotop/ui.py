@@ -436,8 +436,6 @@ class IOTopUI(object):
             stats_lambda = lambda p: p.stats_delta
         processes.sort(key=lambda p: key(p, stats_lambda(p)),
                        reverse=self.sorting_reverse)
-        if not self.options.batch:
-            del processes[self.height - 2:]
         return list(map(format, processes))
 
     def refresh_display(self, first_time, total, current, duration):
@@ -474,10 +472,33 @@ class IOTopUI(object):
             sys.stdout.flush()
         else:
             self.win.erase()
+
+            if Stats.has_blkio_delay_total:
+                status_msg = None
+            else:
+                status_msg = ('CONFIG_TASK_DELAY_ACCT not enabled in kernel, '
+                              'cannot determine SWAPIN and IO %')
+
+            len_summary = len(summary)
+            len_titles = int(bool(titles))
+            len_status_msg = int(bool(status_msg))
+            max_lines = self.height - len_summary - len_titles - len_status_msg
+            if max_lines < 5:
+                titles = []
+                len_titles = 0
+            if max_lines < 6:
+                summary = []
+                len_summary = 0
+            if max_lines < 7:
+                status_msg = None
+                len_status_msg = 0
+            max_lines = self.height - len_summary - len_titles - len_status_msg
+            num_lines = min(len(lines), max_lines)
+
             for i, s in enumerate(summary):
                 self.win.addstr(i, 0, s[:self.width])
-            self.win.hline(len(summary), 0, ord(' ') | curses.A_REVERSE,
-                           self.width)
+            if titles:
+                self.win.hline(len_summary, 0, ord(' ') | curses.A_REVERSE, self.width)
             pos = 0
             remaining_cols = self.width
             for i in range(len(titles)):
@@ -490,19 +511,12 @@ class IOTopUI(object):
                     title += self.sorting_reverse and '>' or '<'
                 title = title[:remaining_cols]
                 remaining_cols -= len(title)
-                self.win.addstr(len(summary), pos, title, attr)
+                self.win.addstr(len_summary, pos, title, attr)
                 pos += len(title)
-            if Stats.has_blkio_delay_total:
-                status_msg = None
-            else:
-                status_msg = ('CONFIG_TASK_DELAY_ACCT not enabled in kernel, '
-                              'cannot determine SWAPIN and IO %')
-            num_lines = min(len(lines),
-                            self.height - len(summary) - int(bool(titles)) - int(bool(status_msg)))
             for i in range(num_lines):
                 try:
                     def print_line(line):
-                        self.win.addstr(i + len(summary) + 1, 0, line)
+                        self.win.addstr(i + len_summary + len_titles, 0, line)
                     try:
                         print_line(lines[i])
                     except UnicodeEncodeError:
