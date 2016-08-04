@@ -496,7 +496,7 @@ class IOTopUI(object):
                 status_msg = ('CONFIG_TASK_DELAY_ACCT not enabled in kernel, '
                               'cannot determine SWAPIN and IO %')
             num_lines = min(len(lines),
-                            self.height - 2 - int(bool(status_msg)))
+                            self.height - len(summary) - int(bool(titles)) - int(bool(status_msg)))
             for i in range(num_lines):
                 try:
                     def print_line(line):
@@ -510,7 +510,7 @@ class IOTopUI(object):
                 except curses.error:
                     pass
             if status_msg:
-                self.win.insstr(self.height - len(summary), 0, status_msg,
+                self.win.insstr(self.height - 1, 0, status_msg,
                                 curses.A_BOLD)
             self.win.refresh()
 
