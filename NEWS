@@ -21,7 +21,7 @@ credentials
 
 0.4.3
 ~~~~~
-o Fixed netlink message parsing to accept alignement padding
+o Fixed netlink message parsing to accept alignment padding
 o Force UTF-8 output even if the locale is misconfigured
 o Changed the semantic of 'a' to show stats since iotop was started
 
