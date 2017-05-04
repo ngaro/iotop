@@ -28,6 +28,17 @@ import struct
 import sys
 import time
 
+# Try to ensure time.monotonic() is available
+# This normally requires Python 3.3 or later.
+# Use PyPI monotonic if needed and available.
+# Fall back on non-monotonic time if needed.
+try:
+    if not hasattr(time, 'monotonic'):
+        from monotonic import monotonic
+        time.monotonic = monotonic
+except (ImportError, RuntimeError):
+    time.monotonic = time.time
+
 #
 # Check for requirements:
 #   o Linux >= 2.6.20 with I/O accounting and VM event counters
