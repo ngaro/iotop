@@ -247,7 +247,7 @@ class ProcessInfo(DumpableObject):
         self.threads = {}  # {tid: ThreadInfo}
         self.stats_delta = Stats.build_all_zero()
         self.stats_accum = Stats.build_all_zero()
-        self.stats_accum_timestamp = time.time()
+        self.stats_accum_timestamp = time.monotonic()
 
     def is_monitored(self, options):
         if (options.pids and not options.processes and
@@ -373,7 +373,7 @@ class ProcessList(DumpableObject):
         self.processes = {}
         self.taskstats_connection = taskstats_connection
         self.options = options
-        self.timestamp = time.time()
+        self.timestamp = time.monotonic()
         self.vmstat = vmstat.VmStat()
 
         # A first time as we are interested in the delta
@@ -424,7 +424,7 @@ class ProcessList(DumpableObject):
         return tids
 
     def update_process_counts(self):
-        new_timestamp = time.time()
+        new_timestamp = time.monotonic()
         self.duration = new_timestamp - self.timestamp
         self.timestamp = new_timestamp
 

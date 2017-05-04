@@ -76,7 +76,7 @@ def format_stats(options, process, duration):
     if options.accumulated:
         stats = process.stats_accum
         display_format = lambda size, duration: format_size(options, size)
-        duration = time.time() - process.stats_accum_timestamp
+        duration = time.monotonic() - process.stats_accum_timestamp
     else:
         stats = process.stats_delta
         display_format = lambda size, duration: format_bandwidth(
