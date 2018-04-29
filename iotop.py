@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # iotop: Display I/O usage of processes in a top like UI
 # Copyright (c) 2007, 2008 Guillaume Chazarain <guichaz@gmail.com>
 # GPL version 2 or later

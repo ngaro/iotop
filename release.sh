@@ -6,7 +6,7 @@ set -e # Exit on error
 PACKAGE=$(basename "$PWD")
 mkdir dist
 TEMPDIR="$(mktemp -d)"
-VERSION=$(python -c "from $PACKAGE.version import VERSION; print VERSION")
+VERSION=$(python3 -c "from $PACKAGE.version import VERSION; print VERSION")
 echo "$PACKAGE-$VERSION: $TEMPDIR"
 mkdir "$TEMPDIR/$PACKAGE-$VERSION"
 git archive HEAD | (cd "$TEMPDIR/$PACKAGE-$VERSION" && tar vx)
