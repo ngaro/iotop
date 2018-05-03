@@ -630,6 +630,15 @@ configure sudo to allow you to run iotop as root.
 
 Please do not file bugs on iotop about this.''', file=sys.stderr)
             sys.exit(1)
+        if e.errno == errno.ENOENT:
+            print(e, file=sys.stderr)
+            print('''
+The Linux kernel interfaces that iotop relies on for process I/O statistics
+were not found. Please enable CONFIG_TASKSTATS in your Linux kernel build
+configuration, use iotop outside a container and or share the host's
+network namespace with the container.
+
+Please do not file bugs on iotop about this.''', file=sys.stderr
         else:
             raise
 
