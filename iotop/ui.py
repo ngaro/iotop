@@ -638,7 +638,7 @@ were not found. Please enable CONFIG_TASKSTATS in your Linux kernel build
 configuration, use iotop outside a container and or share the host's
 network namespace with the container.
 
-Please do not file bugs on iotop about this.''', file=sys.stderr
+Please do not file bugs on iotop about this.''', file=sys.stderr)
         else:
             raise
 
