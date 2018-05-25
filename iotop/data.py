@@ -208,7 +208,13 @@ def parse_proc_pid_status(pid):
     result_dict = {}
     try:
         for line in open('/proc/%d/status' % pid):
-            key, value = line.split(':', 1)
+            try:
+                key, value = line.split(':', 1)
+            except ValueError:
+                # Ignore lines that are not formatted correctly as
+                # some downstream kernels may have weird lines and
+                # the needed fields are probably formatted correctly.
+                pass
             result_dict[key] = value.strip()
     except IOError:
         pass  # No such process
