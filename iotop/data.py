@@ -214,7 +214,7 @@ def parse_proc_pid_status(pid):
                 # Ignore lines that are not formatted correctly as
                 # some downstream kernels may have weird lines and
                 # the needed fields are probably formatted correctly.
-                pass
+                continue
             result_dict[key] = value.strip()
     except IOError:
         pass  # No such process
